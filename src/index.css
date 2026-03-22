@@ -1,27 +1,27 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  
-  --color-slate-50: #f8fafc;
-  --color-slate-100: #f1f5f9;
-  --color-slate-200: #e2e8f0;
-  --color-slate-300: #cbd5e1;
+  --color-primary-50: #f0f7f1;
+  --color-primary-100: #d4e8d6;
+  --color-primary-500: #2d7a3a;
+  --color-primary-600: #1A4D2E;
+  --color-primary-700: #143d24;
+
+  --color-slate-50: #faf9f6;
+  --color-slate-100: #f3f1ec;
+  --color-slate-200: #e8e4df;
+  --color-slate-300: #d6d0c4;
   --color-slate-400: #94a3b8;
-  --color-slate-500: #64748b;
+  --color-slate-500: #6b7c6e;
   --color-slate-600: #475569;
   --color-slate-700: #334155;
   --color-slate-800: #1e293b;
   --color-slate-900: #0f172a;
-  
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  
+
+  --color-success: #1A4D2E;
+  --color-warning: #E67E22;
+  --color-danger: #C0392B;
+
   --font-sans: 'Inter', system-ui, sans-serif;
 }
 
@@ -29,4 +29,11 @@
   body {
     @apply bg-slate-50 text-slate-800 antialiased;
   }
+}
+
+/* Print-friendly: hide sidebar and chrome */
+@media print {
+  aside, header, nav, .no-print { display: none !important; }
+  main { margin-left: 0 !important; }
+  .report-area { break-inside: avoid; }
 }

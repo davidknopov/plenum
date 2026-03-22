@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: '📊' },
@@ -7,61 +8,83 @@ const navItems = [
 ];
 
 export default function Layout() {
-  return (
-    <div className="min-h-screen flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col">
-        <div className="p-6 border-b border-slate-700">
-          <h1 className="text-2xl font-bold tracking-tight">
-            <span className="text-primary-500">P</span>lenum
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">Spatial Intelligence Platform</p>
-        </div>
-        
-        <nav className="flex-1 p-4">
-          {navItems.map(({ to, label, icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === '/'}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all duration-200 ${
-                  isActive
-                    ? 'bg-primary-600 text-white'
-                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                }`
-              }
-            >
-              <span>{icon}</span>
-              <span className="font-medium">{label}</span>
-            </NavLink>
-          ))}
-        </nav>
-        
-        <div className="p-4 border-t border-slate-700">
-          <div className="flex items-center gap-3 px-4 py-2">
-            <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-sm font-medium">
-              JD
-            </div>
-            <div>
-              <p className="text-sm font-medium">Jane Developer</p>
-              <p className="text-xs text-slate-400">Analyst</p>
-            </div>
-          </div>
-        </div>
-      </aside>
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-      {/* Main content */}
-      <main className="flex-1 overflow-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          className="p-8"
+  return (
+    <div className="min-h-screen" style={{ background: '#faf9f6' }}>
+      {/* Mobile header */}
+      <header className="lg:hidden p-4 flex items-center justify-between sticky top-0 z-50" style={{ background: '#1A4D2E', color: '#faf9f6' }}>
+        <h1 className="text-xl font-bold">
+          <span style={{ color: '#A3B859' }}>P</span>lenum
+        </h1>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="p-2 rounded-lg text-xl hover:opacity-80"
         >
-          <Outlet />
-        </motion.div>
-      </main>
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
+      </header>
+
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="lg:hidden overflow-hidden fixed top-14 left-0 right-0 z-40"
+            style={{ background: '#1A4D2E' }}
+          >
+            <nav className="p-4">
+              {navItems.map(({ to, label, icon }) => (
+                <NavLink
+                  key={to} to={to} end={to === '/'}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all ${
+                      isActive ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10'
+                    }`
+                  }
+                >
+                  <span>{icon}</span>
+                  <span className="font-medium">{label}</span>
+                </NavLink>
+              ))}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex">
+        <aside className="hidden lg:flex w-64 flex-col fixed h-screen" style={{ background: '#1A4D2E', color: '#faf9f6' }}>
+          <div className="p-6 border-b" style={{ borderColor: 'rgba(255,255,255,0.12)' }}>
+            <h1 className="text-2xl font-bold tracking-tight">
+              <span style={{ color: '#A3B859' }}>P</span>lenum
+            </h1>
+            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Spatial Intelligence Platform</p>
+          </div>
+          <nav className="flex-1 p-4">
+            {navItems.map(({ to, label, icon }) => (
+              <NavLink
+                key={to} to={to} end={to === '/'}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-lg mb-1 transition-all ${
+                    isActive ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/10'
+                  }`
+                }
+              >
+                <span>{icon}</span>
+                <span className="font-medium">{label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </aside>
+
+        <main className="flex-1 lg:ml-64 min-h-screen">
+          <div className="p-4 md:p-6 lg:p-8">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
