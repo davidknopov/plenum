@@ -6,8 +6,12 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 
-FEATURES = ["numfloors", "lotarea", "bldgarea", "yearbuilt", "far",
-            "is_office", "is_prewar", "is_postwar_ideal", "is_modern"]
+FEATURES = [
+    "numfloors", "lotarea", "bldgarea", "yearbuilt", "far",
+    "is_office", "is_prewar", "is_postwar_ideal", "is_modern",
+    # Extended features — populated by collect_outcomes.py
+    "is_landmark", "is_floodzone", "is_irregular", "office_ratio",
+]
 
 def tree_to_dict(tree):
     t = tree.tree_
@@ -26,6 +30,10 @@ def tree_to_dict(tree):
 
 def main():
     df = pd.read_csv("model/training_data.csv")
+    # Fill any missing extended feature columns with 0 (backwards compatible)
+    for col in FEATURES:
+        if col not in df.columns:
+            df[col] = 0
     X = df[FEATURES].values
     y = df["outcome"].values
 
