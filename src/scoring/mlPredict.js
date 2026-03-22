@@ -17,8 +17,12 @@ function predict_proba(features) {
 }
 
 // Derive the feature vector from PLUTO data (same as training)
+// Note: features added after initial training (is_landmark, is_floodzone, is_irregular,
+// office_ratio) are included here for future model retraining but are not used by the
+// current bundled model.json until it is retrained with these fields.
 function buildFeatures(pluto) {
   const far = pluto.lotarea > 0 ? pluto.bldgarea / pluto.lotarea : 0;
+  const office_ratio = pluto.bldgarea > 0 ? (pluto.officearea || 0) / pluto.bldgarea : 0;
   return {
     numfloors: pluto.numfloors,
     lotarea: pluto.lotarea,
@@ -29,6 +33,11 @@ function buildFeatures(pluto) {
     is_prewar: pluto.yearbuilt > 1900 && pluto.yearbuilt < 1945 ? 1 : 0,
     is_postwar_ideal: pluto.yearbuilt >= 1945 && pluto.yearbuilt <= 1980 ? 1 : 0,
     is_modern: pluto.yearbuilt > 2000 ? 1 : 0,
+    // Extended features — active after model retraining
+    is_landmark: (pluto.landmark || pluto.histdist) ? 1 : 0,
+    is_floodzone: pluto.pfirm15_flag === 'Y' ? 1 : 0,
+    is_irregular: (pluto.irrlotcode && pluto.irrlotcode !== '0') ? 1 : 0,
+    office_ratio,
   };
 }
 
@@ -46,6 +55,10 @@ function topDrivers(pluto) {
     is_prewar: features.is_prewar ? 'Pre-war construction (1900–1945)' : 'Not pre-war',
     is_postwar_ideal: features.is_postwar_ideal ? 'Post-war ideal era (1945–1980)' : 'Outside ideal era',
     is_modern: features.is_modern ? 'Modern construction (post-2000)' : 'Not modern',
+    is_landmark: features.is_landmark ? 'Landmark or historic district' : 'No landmark restrictions',
+    is_floodzone: features.is_floodzone ? 'FEMA flood zone (post-FIRM 2015)' : 'Not in flood zone',
+    is_irregular: features.is_irregular ? 'Irregular lot geometry' : 'Regular lot geometry',
+    office_ratio: `Office area ratio: ${(features.office_ratio * 100).toFixed(0)}%`,
   };
   return Object.entries(importances)
     .sort((a, b) => b[1] - a[1])

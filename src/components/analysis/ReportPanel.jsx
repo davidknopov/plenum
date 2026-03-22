@@ -58,8 +58,14 @@ export default function ReportPanel({ pluto, scores, compact = false }) {
               ['Floors', pluto.numfloors],
               ['Lot Area', `${pluto.lotarea.toLocaleString()} sf`],
               ['Bldg Area', `${pluto.bldgarea.toLocaleString()} sf`],
+              ['Office Area', pluto.officearea ? `${pluto.officearea.toLocaleString()} sf` : '—'],
+              ['Res Area', pluto.resarea ? `${pluto.resarea.toLocaleString()} sf` : '—'],
               ['Zoning', pluto.zonedist1 || '—'],
               ['Bldg Class', pluto.bldgclass || '—'],
+              ['Landmark', pluto.landmark || '—'],
+              ['Historic Dist', pluto.histdist || '—'],
+              ['Flood Zone', pluto.pfirm15_flag === 'Y' ? 'Yes' : 'No'],
+              ['Irregular Lot', (pluto.irrlotcode && pluto.irrlotcode !== '0') ? 'Yes' : 'No'],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between py-1 border-b" style={{ borderColor: '#e8e4df' }}>
                 <span style={{ color: '#6b7c6e' }}>{k}</span>

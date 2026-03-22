@@ -12,6 +12,13 @@ export function calcSpatialScore(d) {
   if (d.yearbuilt > 2000) s -= 10;
   if (d.bldgclass?.startsWith('O')) s += 15;
   if (d.bldgclass?.startsWith('D')) s -= 5;
+  // Landmark / historic district increases conversion complexity
+  if (d.landmark) s -= 10;
+  else if (d.histdist) s -= 5;
+  // Irregular lot creates awkward floor plates
+  if (d.irrlotcode && d.irrlotcode !== '0') s -= 5;
+  // Flood zone is a significant risk factor
+  if (d.pfirm15_flag === 'Y') s -= 10;
   return clamp(s);
 }
 
@@ -48,6 +55,10 @@ export function explainSpatial(d) {
   if (d.yearbuilt > 2000) factors.push({ text: `Built ${d.yearbuilt} (modern office, unlikely convert)`, delta: -10 });
   if (d.bldgclass?.startsWith('O')) factors.push({ text: `Class "${d.bldgclass}" is office`, delta: +15 });
   if (d.bldgclass?.startsWith('D')) factors.push({ text: `Class "${d.bldgclass}" is elevator apt`, delta: -5 });
+  if (d.landmark) factors.push({ text: `Landmark: ${d.landmark} (conversion restrictions apply)`, delta: -10 });
+  else if (d.histdist) factors.push({ text: `Historic district: ${d.histdist} (design review required)`, delta: -5 });
+  if (d.irrlotcode && d.irrlotcode !== '0') factors.push({ text: 'Irregular lot (awkward floor plate geometry)', delta: -5 });
+  if (d.pfirm15_flag === 'Y') factors.push({ text: 'FEMA flood zone (post-FIRM 2015)', delta: -10 });
   return factors;
 }
 
@@ -113,6 +124,16 @@ export function geometryFlags(pluto, daylightScore, efficiencyScore) {
   if (efficiencyScore < 40) flags.push({ label: 'Net-to-gross efficiency', icon: '❌', level: 'red' });
   else if (efficiencyScore < 65) flags.push({ label: 'Net-to-gross efficiency', icon: '⚠️', level: 'amber' });
   else flags.push({ label: 'Net-to-gross efficiency', icon: '✅', level: 'green' });
+  // Flood zone
+  if (pluto.pfirm15_flag === 'Y') flags.push({ label: 'FEMA flood zone', icon: '❌', level: 'red' });
+  else flags.push({ label: 'FEMA flood zone', icon: '✅', level: 'green' });
+  // Landmark / historic district
+  if (pluto.landmark) flags.push({ label: `Landmark: ${pluto.landmark}`, icon: '⚠️', level: 'amber' });
+  else if (pluto.histdist) flags.push({ label: `Historic district: ${pluto.histdist}`, icon: '⚠️', level: 'amber' });
+  else flags.push({ label: 'No landmark restrictions', icon: '✅', level: 'green' });
+  // Irregular lot
+  if (pluto.irrlotcode && pluto.irrlotcode !== '0') flags.push({ label: 'Irregular lot geometry', icon: '⚠️', level: 'amber' });
+  else flags.push({ label: 'Regular lot geometry', icon: '✅', level: 'green' });
   return flags;
 }
 

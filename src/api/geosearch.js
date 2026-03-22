@@ -35,5 +35,13 @@ export async function fetchPlutoData(bbl) {
     bldgclass: r.bldgclass,
     unitsres: Number(r.unitsres) || 0,
     unitstotal: Number(r.unitstotal) || 0,
+    // Extended fields for richer scoring
+    officearea: Number(r.officearea) || 0,
+    retailarea: Number(r.retailarea) || 0,
+    resarea: Number(r.resarea) || 0,
+    histdist: r.histdist || '',
+    landmark: r.landmark || '',
+    pfirm15_flag: r.pfirm15_flag || '',
+    irrlotcode: r.irrlotcode || '',
   };
 }
