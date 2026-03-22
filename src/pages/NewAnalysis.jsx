@@ -52,7 +52,7 @@ export default function NewAnalysis() {
   const b = useBuilding();
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className={`${comparing ? 'max-w-6xl' : 'max-w-3xl'} mx-auto`}>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold" style={{ color: '#1A4D2E' }}>New Analysis</h1>
@@ -77,7 +77,7 @@ export default function NewAnalysis() {
 
       {!comparing ? (
         /* Single building mode */
-        <div className="max-w-3xl mx-auto">
+        <div>
           <div className="mb-6"><AddressSearch onSelect={a.load} /></div>
           {a.loading && <LoadingIndicator />}
           <ErrorMsg msg={!a.loading ? a.error : null} />
